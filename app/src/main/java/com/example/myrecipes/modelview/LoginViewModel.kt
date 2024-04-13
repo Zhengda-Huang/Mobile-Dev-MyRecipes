@@ -2,12 +2,16 @@ package com.example.myrecipes.modelview
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.example.myrecipes.model.database.User.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class LoginViewModel(application: Application): AndroidViewModel(application) {
-    private val _usernameText = MutableStateFlow("")
-    val usernameText: StateFlow<String> = _usernameText
+class LoginViewModel(
+    application: Application,
+    val userRepository: UserRepository,
+): AndroidViewModel(application) {
+    private val _emailText = MutableStateFlow("")
+    val emailText: StateFlow<String> = _emailText
 
     private val _passwordText = MutableStateFlow("")
     val passwordText: StateFlow<String> = _passwordText
@@ -18,8 +22,8 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
     /**
      * sets the username text to the given value.
      */
-    fun setUsernameText(value: String) {
-        _usernameText.value = value
+    fun setEmailText(value: String) {
+        _emailText.value = value
         clearError()
     }
 
@@ -42,8 +46,8 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
      * clear input text
      */
     private fun clearInput() {
-        _usernameText.value = ""
-        _passwordText.value = ""
+        setEmailText("")
+        setPasswordText("")
     }
 
     /**
@@ -51,16 +55,24 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
      * if true, clears the current input and returns true
      * if false, displays an error message
      */
-    fun isValidCredentials(): Boolean {
-        if (usernameText.value == "admin"
-            && passwordText.value == "admin") {
-            clearInput()
-            return true
-        } else if (usernameText.value.isEmpty() || passwordText.value.isEmpty()) {
-            _errorMessage.value = "Please enter your username AND password!"
+    suspend fun isValidCredentials(): Boolean {
+        val emailRegex = "^[A-Za-z](.*)([@])(.+)(\\.)(.+)".toRegex()
+        if (emailText.value.isEmpty() || !emailRegex.matches(emailText.value)) {
+            _errorMessage.value = "Please enter your email correctly."
+        } else if (passwordText.value.isEmpty()) {
+            _errorMessage.value = "Please enter your password."
         } else {
-            _errorMessage.value = "Invalid credentials, Try again!"
-            clearInput()
+            val user = userRepository.getUserByEmail(emailText.value)
+            if (user != null) {
+                if (user.password == passwordText.value) {
+                    clearInput()
+                    return true
+                } else {
+                    _errorMessage.value = "Incorrect password, try again."
+                }
+            } else {
+                _errorMessage.value = "It seems like an account with this email does not exist."
+            }
         }
         return false
     }

@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.work.WorkManager
+import com.example.myrecipes.model.database.User.UserRepository
 import com.example.myrecipes.modelview.LoginViewModel
 import com.example.myrecipes.modelview.RecipesListViewModel
 import com.example.myrecipes.modelview.SignupViewModel
@@ -33,8 +34,12 @@ fun AppNavHost(
         navController = navController,
         startDestination = NavigationItem.Home.route
     ) {
+        val userRepository = UserRepository(application.applicationContext)
         val recipeListViewModel = RecipesListViewModel(application, workManager)
-        val loginViewModel = LoginViewModel(application)
+        val loginViewModel = LoginViewModel(
+            application = application,
+            userRepository = userRepository
+        )
         val signupViewModel = SignupViewModel(application)
 
         composable(NavigationItem.Home.route) {

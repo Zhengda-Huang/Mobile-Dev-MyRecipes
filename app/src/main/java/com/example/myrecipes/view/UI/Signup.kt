@@ -10,6 +10,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,8 +22,11 @@ import com.example.myrecipes.R
 import com.example.myrecipes.modelview.SignupViewModel
 import com.example.myrecipes.view.UI.components.TextInputComponent
 import com.example.myrecipes.view.navigation.Screen
+import kotlinx.coroutines.launch
 
-
+/**
+ * sign up screen
+ */
 @Composable
 fun Signup(
     viewModel: SignupViewModel/*= viewModel()*/,
@@ -70,15 +74,28 @@ fun Signup(
             isPassword = true
         )
 
+        val coroutineScope = rememberCoroutineScope()
+
         Button(
             onClick = {
-                if (viewModel.isValidSignUp()) {
-                    navController.navigate(Screen.RECIPE_LIST.name)
+                coroutineScope.launch {
+                    if (viewModel.isValidSignUp()) {
+                        navController.navigate(Screen.RECIPE_LIST.name)
+                    }
                 }
             },
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
             Text(text = stringResource(id = R.string.signup))
+        }
+
+        Button(
+            onClick = {
+                navController.popBackStack()
+            },
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Text(text = stringResource(id = R.string.back))
         }
     }
 }

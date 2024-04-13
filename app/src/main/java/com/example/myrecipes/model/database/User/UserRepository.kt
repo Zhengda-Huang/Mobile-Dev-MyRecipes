@@ -12,12 +12,12 @@ class UserRepository(context: Context) {
         userDao = database.UserDao()
     }
 
-    suspend fun insertUser(user: User ) {
+    suspend fun insertUser(user: User) {
         userDao.insert(user)
     }
 
-    suspend fun getUserByEmail(email: String){
-        userDao.getUserByEmail(email)
+    suspend fun getUserByEmail(email: String): User?{
+        return userDao.getUserByEmail(email)
     }
 
     suspend fun getUserById(Id: Long){
