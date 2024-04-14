@@ -13,6 +13,8 @@ sealed class NavigationItem(val route: String) {
     object Login : NavigationItem(Screen.LOGIN.route)
     object Signup : NavigationItem(Screen.SIGNUP.route)
     object RecipeList : NavigationItem(Screen.RECIPE_LIST.route)
-    object RecipeDetail : NavigationItem(Screen.RECIPE_DETAIL.route)
+    object RecipeDetail : NavigationItem(Screen.RECIPE_DETAIL.route) {
+        fun createRoute(recipeId: String) = "recipeDetail/$recipeId"
+    }
 
 }

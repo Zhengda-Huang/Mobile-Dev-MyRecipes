@@ -5,8 +5,10 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.work.WorkManager
 import com.example.myrecipes.modelview.RecipesListViewModel
 import com.example.myrecipes.view.UI.Home
@@ -20,8 +22,8 @@ fun AppNavHost(
     navController: NavHostController,
     context: Context,
     application: Application,
-    workManager: WorkManager)
-{
+    workManager: WorkManager
+) {
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -33,15 +35,21 @@ fun AppNavHost(
             Home(modelViewModel = recipeListViewModel, navController = navController)
         }
         composable(NavigationItem.Login.route) {
-            
+
         }
         composable(NavigationItem.Signup.route) {
         }
         composable(NavigationItem.RecipeList.route) {
-            RecipesList(modelViewModel = recipeListViewModel)
+            RecipesList(modelViewModel = recipeListViewModel, navController = navController)
         }
-        composable(NavigationItem.RecipeDetail.route) {
-            RecipeDetail(modelViewModel = recipeListViewModel)
+        composable(NavigationItem.RecipeDetail.route,
+            arguments = listOf(navArgument("recipeId") { type = NavType.StringType })
+        ) {
+            val recipeId = it.arguments?.getString("recipeId")
+            if (recipeId != null) {
+                // There needs to be a valid existing recipeId to access this route
+                RecipeDetail(modelViewModel = recipeListViewModel, recipeId = recipeId)
+            }
         }
     }
 }

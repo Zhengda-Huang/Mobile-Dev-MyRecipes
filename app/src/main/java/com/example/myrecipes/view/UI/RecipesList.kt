@@ -2,6 +2,7 @@ package com.example.myrecipes.view.UI
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,13 +31,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.myrecipes.R
 import com.example.myrecipes.model.database.Recipes.Recipe
 import com.example.myrecipes.modelview.RecipesListViewModel
+import com.example.myrecipes.view.navigation.NavigationItem
 
 @Composable
-fun RecipesList(modelViewModel: RecipesListViewModel) {
+fun RecipesList(modelViewModel: RecipesListViewModel, navController: NavController) {
     val productsState = modelViewModel.recipes.collectAsState()
     val loadingState = modelViewModel.loading.collectAsState()
     val errorState = modelViewModel.error.collectAsState()
@@ -70,13 +73,15 @@ fun RecipesList(modelViewModel: RecipesListViewModel) {
             }
 
             else -> {
-                // Display the list of recipes
                 Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
+                    modifier = Modifier.verticalScroll(rememberScrollState())
                 ) {
                     products.forEach { recipe ->
-                        RecipeCard(recipe = recipe)  // Assuming RecipeCard is a Composable that represents a single recipe item
+                        RecipeCard(recipe = recipe) {
+                            val route =
+                                NavigationItem.RecipeDetail.createRoute(recipeId = recipe.idMeal)
+                            navController.navigate(route)
+                        }
                     }
                 }
             }
@@ -86,12 +91,13 @@ fun RecipesList(modelViewModel: RecipesListViewModel) {
 }
 
 @Composable
-fun RecipeCard(recipe: Recipe) {
+fun RecipeCard(recipe: Recipe, onClickHandler: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
             .background(Color.LightGray)
+            .clickable { onClickHandler() }
     ) {
         Image(
             painter = rememberImagePainter(data = recipe.strMealThumb),
@@ -107,8 +113,7 @@ fun RecipeCard(recipe: Recipe) {
                 .align(Alignment.Top)
         ) {
             Text(
-                text = recipe.strMeal,
-                style = MaterialTheme.typography.h6
+                text = recipe.strMeal, style = MaterialTheme.typography.h6
             )
             Text(
                 text = "Category: ${recipe.strCategory}",
@@ -144,8 +149,7 @@ fun LoadingStatePreview() {
 fun ErrorStatePreview() {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxSize()  // This makes the Box fill the entire available space in the preview
+        modifier = Modifier.fillMaxSize()  // This makes the Box fill the entire available space in the preview
     ) {
         Text(
             "An error occurred, please try again",
@@ -221,8 +225,7 @@ fun RecipeCardPreview() {
                     .align(Alignment.Top)
             ) {
                 Text(
-                    text = recipe.strMeal,
-                    style = MaterialTheme.typography.h6
+                    text = recipe.strMeal, style = MaterialTheme.typography.h6
                 )
                 Text(
                     text = "Category: ${recipe.strCategory}",
