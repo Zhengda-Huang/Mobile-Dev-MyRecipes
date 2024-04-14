@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 
-class RecipesListViewModel(application: Application, private val workManager: WorkManager) : AndroidViewModel(application) {
+class RecipesListViewModel(application: Application, private val workManager: WorkManager) :
+    AndroidViewModel(application) {
     private val recipeApi: RecipesApiRequest = RecipesApiRequest()
     private val logger = Logger.getLogger("MyLogger")
 
@@ -64,11 +65,13 @@ class RecipesListViewModel(application: Application, private val workManager: Wo
         initalRecipesFetching()
         repository = RecipesRepository(application.applicationContext)
     }
+
     private fun convertJsonToProducts(json: String?): List<Recipe> {
         val listType = object : TypeToken<List<Recipe>>() {}.type
         return Gson().fromJson(json, listType)
     }
-    private fun initalRecipesFetching(){
+
+    private fun initalRecipesFetching() {
         val refreshWorkRequest: WorkRequest =
             OneTimeWorkRequestBuilder<RefreshRecipesWorker>()
                 .setConstraints(constraints)
@@ -83,26 +86,33 @@ class RecipesListViewModel(application: Application, private val workManager: Wo
                         val outputData = workInfo.outputData
                         val productsJson = outputData.getString("Recipes")
 
-                        if (productsJson != null){
+                        if (productsJson != null) {
                             val recipes: List<Recipe> = convertJsonToProducts(productsJson)
                             _loading.value = false
                             _recipes.value = recipes
                             _error.value = false
                         }
                     }
+
                     WorkInfo.State.FAILED -> {
                         logger.warning("Work request failed")
                         _error.value = true
                     }
+
                     WorkInfo.State.CANCELLED -> {
                         logger.warning("Work request cancelled")
                     }
+
                     else -> {
                         // Work request is still running or enqueued
                     }
                 }
             }
         }
+    }
+
+    fun getRecipeById(recipeId: String): Recipe? {
+        return recipes.value.firstOrNull { it.idMeal == recipeId}
     }
 
 }
