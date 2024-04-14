@@ -42,7 +42,7 @@ fun Home(modelViewModel: RecipesListViewModel, navController: NavHostController)
 
         Button(
             onClick = {
-                navController.navigate(Screen.SIGNUP.name)
+                navController.navigate(Screen.SIGNUP.route)
             },
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
@@ -51,7 +51,7 @@ fun Home(modelViewModel: RecipesListViewModel, navController: NavHostController)
 
         Button(
             onClick = {
-                navController.navigate(Screen.LOGIN.name)
+                navController.navigate(Screen.LOGIN.route)
             },
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
@@ -60,7 +60,7 @@ fun Home(modelViewModel: RecipesListViewModel, navController: NavHostController)
 
         Button(
             onClick = {
-                navController.navigate(Screen.RECIPE_LIST.name)
+                navController.navigate(Screen.RECIPE_LIST.route)
             },
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
@@ -70,7 +70,7 @@ fun Home(modelViewModel: RecipesListViewModel, navController: NavHostController)
 
         Button(
             onClick = {
-                navController.navigate(Screen.RECIPE_DETAIL.name)
+                navController.navigate(Screen.RECIPE_DETAIL.route)
             },
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
