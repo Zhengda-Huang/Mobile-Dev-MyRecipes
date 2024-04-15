@@ -63,6 +63,14 @@ class SignupViewModel(
     }
 
     /**
+     * clear all strings
+     */
+    fun clearAll() {
+        clearInput()
+        clearError()
+    }
+
+    /**
      * checks if the information is valid to sign up
      * if true, clears the current input and returns true
      * if false, displays an error message

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -58,20 +59,23 @@ fun Signup(
         TextInputComponent(
             label = stringResource(id = R.string.username),
             value = usernameTextState.value,
-            onValueChange = { viewModel.setUsernameText(it) }
+            onValueChange = { viewModel.setUsernameText(it) },
+            placeholderText = "create a username"
         )
 
         TextInputComponent(
             label = stringResource(id = R.string.email),
             value = emailTextState.value,
-            onValueChange = { viewModel.setEmailText(it) }
+            onValueChange = { viewModel.setEmailText(it) },
+            placeholderText = "enter email"
         )
 
         TextInputComponent(
             label = stringResource(id = R.string.password),
             value = passwordTextState.value,
             onValueChange = { viewModel.setPasswordText(it) },
-            isPassword = true
+            isPassword = true,
+            placeholderText = "create a password"
         )
 
         val coroutineScope = rememberCoroutineScope()
@@ -80,20 +84,21 @@ fun Signup(
             onClick = {
                 coroutineScope.launch {
                     if (viewModel.isValidSignUp()) {
-                        navController.navigate(Screen.RECIPE_LIST.name)
+                        navController.navigate(Screen.RECIPE_LIST.route)
                     }
                 }
             },
-            modifier = Modifier.padding(vertical = 8.dp)
+            modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth(0.8f)
         ) {
             Text(text = stringResource(id = R.string.signup))
         }
 
         Button(
             onClick = {
+                viewModel.clearAll()
                 navController.popBackStack()
             },
-            modifier = Modifier.padding(vertical = 8.dp)
+            modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth(0.8f)
         ) {
             Text(text = stringResource(id = R.string.back))
         }

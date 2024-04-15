@@ -51,6 +51,14 @@ class LoginViewModel(
     }
 
     /**
+     * clear all strings
+     */
+    fun clearAll() {
+        clearInput()
+        clearError()
+    }
+
+    /**
      * checks if the user credentials are valid in the database
      * if true, clears the current input and returns true
      * if false, displays an error message

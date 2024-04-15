@@ -40,10 +40,13 @@ fun AppNavHost(
             application = application,
             userRepository = userRepository
         )
-        val signupViewModel = SignupViewModel(application)
+        val signupViewModel = SignupViewModel(
+            application = application,
+            userRepository = userRepository
+        )
 
         composable(NavigationItem.Home.route) {
-            Home(modelViewModel = recipeListViewModel, navController = navController)
+            Home(navController = navController)
         }
         composable(NavigationItem.Login.route) {
             Login(viewModel = loginViewModel, navController = navController)
