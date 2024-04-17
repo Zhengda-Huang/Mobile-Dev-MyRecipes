@@ -5,10 +5,16 @@
       <entry key="ExampleInstrumentedTest">
         <State />
       </entry>
+      <entry key="HomeTest">
+        <State />
+      </entry>
       <entry key="LoginTest">
         <State />
       </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="testLoginScreen()">
         <State />
       </entry>
     </value>
