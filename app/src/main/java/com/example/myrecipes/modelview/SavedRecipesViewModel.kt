@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.Serializable
@@ -24,21 +25,34 @@ import java.util.logging.Logger
 import kotlin.math.log
 
 open class SavedRecipesViewModel(application: Application) {
-    private val logger = Logger.getLogger("MyLogger")
-    private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
-    val recipes: StateFlow<List<Recipe>> = _recipes
-
-    private val _user_id = MutableStateFlow<Long>(0)
-    val user_id : StateFlow<Long> = _user_id
+//    private val logger = Logger.getLogger("MyLogger")
+//    private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
+//    val recipes: StateFlow<List<Recipe>> = _recipes
+//
+//    private val _user_id = MutableStateFlow<Long>(0)
+//    val user_id : StateFlow<Long> = _user_id
 
     private var repository: UserSavedRecipesRepository
+
+    data class UiState(
+        val recipes: List<Recipe> = emptyList(),
+        val userId: Long = 0
+    )
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
 
     init {
         repository = UserSavedRecipesRepository(application.applicationContext)
     }
 
     fun updateUserId(userId: Long) {
-        _user_id.value = userId
+        _uiState.update{ currentState ->
+            currentState.copy(
+                recipes = currentState.recipes,
+                userId = userId
+            )
+        }
     }
     suspend fun addSavedRecipes(user_id: Long, recipe_id: String){
         val recipe = UserSavedRecipes(user_id, recipe_id)
@@ -46,19 +60,29 @@ open class SavedRecipesViewModel(application: Application) {
 
     }
 
+    private fun setRecipes(recipes: List<Recipe>) {
+        _uiState.update{ currentState ->
+            currentState.copy(
+                recipes = recipes,
+                userId = currentState.userId
+            )
+        }
+    }
+
     fun removeRecipe(recipe: Recipe?) {
-        val updatedRecipes = _recipes.value.toMutableList()
+        val updatedRecipes = _uiState.value.recipes.toMutableList()
         if (recipe !== null) {
             updatedRecipes.remove(recipe)
-            _recipes.value = updatedRecipes
+
+            setRecipes(updatedRecipes)
         }
     }
 
     fun addRecipe(recipe: Recipe?) {
-        val updatedRecipes = _recipes.value.toMutableList()
+        val updatedRecipes = uiState.value.recipes.toMutableList()
         if (recipe !== null) {
             updatedRecipes.add(recipe)
-            _recipes.value = updatedRecipes
+            setRecipes(updatedRecipes)
         }
     }
 
@@ -78,9 +102,9 @@ open class SavedRecipesViewModel(application: Application) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     isSaved = repository.getSavedRecipe(recipe) >= 1
-                    logger.info(repository.getSavedRecipe(recipe).toString())
+//                    logger.info(repository.getSavedRecipe(recipe).toString())
                 } catch (e: Exception) {
-                    logger.warning(e.toString())
+//                    logger.warning(e.toString())
                 }
             }.join() // Wait for the coroutine to complete
         }

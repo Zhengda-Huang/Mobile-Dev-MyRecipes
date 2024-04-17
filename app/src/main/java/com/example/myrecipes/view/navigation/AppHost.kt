@@ -41,7 +41,7 @@ fun AppNavHost(
         val userRepository = UserRepository(application.applicationContext)
         val recipeListViewModel = RecipesListViewModel(application, workManager)
         val savedRecipesViewModel = SavedRecipesViewModel(application)
-        val user_id = savedRecipesViewModel.user_id.value
+        val user_id = savedRecipesViewModel.uiState.value.userId
         val loginViewModel = LoginViewModel(
             application = application,
             userRepository = userRepository
@@ -82,7 +82,12 @@ fun AppNavHost(
             }
         }
         composable(NavigationItem.SavedRecipes.route){
-            FavoriteList(modelViewModel= savedRecipesViewModel, user_id= user_id, navController= navController, recipeListViewModel= recipeListViewModel)
+            FavoriteList(
+                modelViewModel= savedRecipesViewModel,
+                savedRecipesUiState = savedRecipesViewModel.uiState.collectAsState().value,
+                navController= navController,
+                recipeListViewModel= recipeListViewModel
+            )
         }
     }
 }

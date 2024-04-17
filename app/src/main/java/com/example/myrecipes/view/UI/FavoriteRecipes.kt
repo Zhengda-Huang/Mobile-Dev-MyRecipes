@@ -43,11 +43,14 @@ import com.example.myrecipes.modelview.SavedRecipesViewModel
 import com.example.myrecipes.view.navigation.NavigationItem
 
 @Composable
-fun FavoriteList(modelViewModel: SavedRecipesViewModel, user_id: Long, navController: NavController, recipeListViewModel: RecipesListViewModel) {
-    val productsState = modelViewModel.recipes.collectAsState()
-
+fun FavoriteList(
+    modelViewModel: SavedRecipesViewModel,
+    savedRecipesUiState: SavedRecipesViewModel.UiState,
+    navController: NavController,
+    recipeListViewModel: RecipesListViewModel
+) {
     // Access the values
-    val products = productsState.value
+    val products = savedRecipesUiState.recipes
 
     Box(
         modifier = Modifier
@@ -63,7 +66,7 @@ fun FavoriteList(modelViewModel: SavedRecipesViewModel, user_id: Long, navContro
                 RecipeCard(
                     recipe = recipe,
                     modelView = modelViewModel,
-                    user_id = user_id,
+                    user_id = savedRecipesUiState.userId,
                     recipeListViewModel =recipeListViewModel ,
                     onClickHandler = {
                         val route =
