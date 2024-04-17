@@ -43,19 +43,23 @@ import com.example.myrecipes.view.navigation.NavigationItem
 @Composable
 fun RecipesList(
     modelViewModel: RecipesListViewModel,
+    uiState: RecipesListViewModel.UiState,
     savedRecipesViewModel: SavedRecipesViewModel,
     navController: NavController,
     user_id: Long
 ) {
-    val productsState = modelViewModel.recipes.collectAsState()
-    val loadingState = modelViewModel.loading.collectAsState()
-    val errorState = modelViewModel.error.collectAsState()
-    val pageState = modelViewModel.page.collectAsState()
-
-    // Access the values
-    val products = productsState.value
-    val isLoading = loadingState.value
-    val isError = errorState.value
+//    val productsState = modelViewModel.recipes.collectAsState()
+//    val loadingState = modelViewModel.loading.collectAsState()
+//    val errorState = modelViewModel.error.collectAsState()
+//    val pageState = modelViewModel.page.collectAsState()
+//
+//    // Access the values
+//    val products = productsState.value
+//    val isLoading = loadingState.value
+//    val isError = errorState.value
+    val products = uiState.recipes
+    val isLoading = uiState.loading
+    val isError = uiState.error
 
     Box(
         modifier = Modifier

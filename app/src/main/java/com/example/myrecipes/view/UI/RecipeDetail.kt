@@ -45,10 +45,16 @@ import kotlinx.coroutines.withContext
 
 
 @Composable
-fun RecipeDetail(modelViewModel: RecipesListViewModel, savedRecipesViewModel: SavedRecipesViewModel, recipeId: String, user_id: Long) {
-    val recipes = modelViewModel.recipes.collectAsState()
+fun RecipeDetail(
+    modelViewModel: RecipesListViewModel,
+    uiState: RecipesListViewModel.UiState,
+    savedRecipesViewModel: SavedRecipesViewModel,
+    recipeId: String, user_id: Long
+) {
+//    val recipes = modelViewModel.recipes.collectAsState()
     val logger = Logger.getLogger("MyLogger")
-    val recipe = recipes.value
+//    val recipe = recipes.value
+    val recipe = uiState.recipes
     val currentRecipe = modelViewModel.getRecipeById(recipeId)
     val scrollState = rememberScrollState()
 

@@ -70,7 +70,13 @@ fun AppNavHost(
             )
         }
         composable(NavigationItem.RecipeList.route) {
-            RecipesList(modelViewModel = recipeListViewModel, navController = navController, savedRecipesViewModel = savedRecipesViewModel, user_id = user_id)
+            RecipesList(
+                modelViewModel = recipeListViewModel,
+                uiState = recipeListViewModel.uiState.collectAsState().value,
+                navController = navController,
+                savedRecipesViewModel = savedRecipesViewModel,
+                user_id = user_id
+            )
         }
         composable(NavigationItem.RecipeDetail.route,
             arguments = listOf(navArgument("recipeId") { type = NavType.StringType })
@@ -78,7 +84,13 @@ fun AppNavHost(
             val recipeId = it.arguments?.getString("recipeId")
             if (recipeId != null) {
                 // There needs to be a valid existing recipeId to access this route
-                RecipeDetail(modelViewModel = recipeListViewModel, recipeId = recipeId, savedRecipesViewModel = savedRecipesViewModel, user_id = user_id)
+                RecipeDetail(
+                    modelViewModel = recipeListViewModel,
+                    uiState = recipeListViewModel.uiState.collectAsState().value,
+                    recipeId = recipeId,
+                    savedRecipesViewModel = savedRecipesViewModel,
+                    user_id = user_id
+                )
             }
         }
         composable(NavigationItem.SavedRecipes.route){

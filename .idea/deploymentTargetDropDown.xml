@@ -8,16 +8,16 @@
       <entry key="LoginTest">
         <State />
       </entry>
-      <entry key="SignupTest">
+      <entry key="RecipeDetailTest">
+        <State />
+      </entry>
+      <entry key="RecipesListTest">
         <State />
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="testTextFieldContent()">
-        <State />
-      </entry>
-      <entry key="testTextFieldInteractions()">
+      <entry key="testErrorMessage()">
         <State />
       </entry>
     </value>

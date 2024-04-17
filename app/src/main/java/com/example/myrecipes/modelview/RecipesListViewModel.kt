@@ -19,6 +19,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
@@ -28,17 +29,27 @@ open class RecipesListViewModel(application: Application, private val workManage
     private val recipeApi: RecipesApiRequest = RecipesApiRequest()
     private val logger = Logger.getLogger("MyLogger")
 
-    private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
-    val recipes: StateFlow<List<Recipe>> = _recipes
+//    private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
+//    val recipes: StateFlow<List<Recipe>> = _recipes
+//
+//    private val _loading = MutableStateFlow(true)
+//    val loading: StateFlow<Boolean> = _loading
+//
+//    private val _error = MutableStateFlow(false)
+//    val error: StateFlow<Boolean> = _error
+//
+//    private val _page = MutableStateFlow<Int?>(null)
+//    val page: StateFlow<Int?> = _page
 
-    private val _loading = MutableStateFlow(true)
-    val loading: StateFlow<Boolean> = _loading
+    data class UiState(
+        val recipes: List<Recipe> = emptyList(),
+        val loading: Boolean = true,
+        val error: Boolean = false,
+        val page: Int? = null
+    )
 
-    private val _error = MutableStateFlow(false)
-    val error: StateFlow<Boolean> = _error
-
-    private val _page = MutableStateFlow<Int?>(null)
-    val page: StateFlow<Int?> = _page
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
 
     private var repository: RecipesRepository
 
@@ -88,15 +99,32 @@ open class RecipesListViewModel(application: Application, private val workManage
 
                         if (productsJson != null) {
                             val recipes: List<Recipe> = convertJsonToProducts(productsJson)
-                            _loading.value = false
-                            _recipes.value = recipes
-                            _error.value = false
+                            _uiState.update { currentState ->
+                                currentState.copy(
+                                    loading = false,
+                                    recipes = recipes,
+                                    error = false,
+                                    page = currentState.page
+                                )
+                            }
+//                            _loading.value = false
+//                            _recipes.value = recipes
+//                            _error.value = false
                         }
                     }
 
                     WorkInfo.State.FAILED -> {
                         logger.warning("Work request failed")
-                        _error.value = true
+//                        _error.value = true
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                loading = currentState.loading,
+                                recipes = currentState.recipes,
+                                error = true,
+                                page = currentState.page
+                            )
+                        }
+
                     }
 
                     WorkInfo.State.CANCELLED -> {
@@ -112,7 +140,7 @@ open class RecipesListViewModel(application: Application, private val workManage
     }
 
     fun getRecipeById(recipeId: String): Recipe? {
-        return recipes.value.firstOrNull { it.idMeal == recipeId}
+        return _uiState.value.recipes.firstOrNull { it.idMeal == recipeId}
     }
 
 }
