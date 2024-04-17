@@ -37,45 +37,45 @@ class SignupViewModelTest {
 
     @Test
     fun `initial state`() {
-        assertEquals("", viewModel.usernameText.value)
-        assertEquals("", viewModel.emailText.value)
-        assertEquals("", viewModel.passwordText.value)
-        assertEquals("", viewModel.errorMessage.value)
+        assertEquals("", viewModel.uiState.value.usernameText)
+        assertEquals("", viewModel.uiState.value.emailText)
+        assertEquals("", viewModel.uiState.value.passwordText)
+        assertEquals("", viewModel.uiState.value.errorMessage)
     }
 
     @Test
     fun `test setUsername function`() {
-        assertEquals("", viewModel.usernameText.value)
+        assertEquals("", viewModel.uiState.value.usernameText)
         viewModel.setUsernameText("username")
-        assertEquals("username", viewModel.usernameText.value)
+        assertEquals("username", viewModel.uiState.value.usernameText)
     }
 
     @Test
     fun `test setEmailText function`() {
-        assertEquals("", viewModel.emailText.value)
+        assertEquals("", viewModel.uiState.value.emailText)
         viewModel.setEmailText("example@gmail.com")
-        assertEquals("example@gmail.com", viewModel.emailText.value)
+        assertEquals("example@gmail.com", viewModel.uiState.value.emailText)
     }
 
     @Test
     fun `test setPasswordText function`() {
-        assertEquals("", viewModel.passwordText.value)
+        assertEquals("", viewModel.uiState.value.passwordText)
         viewModel.setPasswordText("password")
-        assertEquals("password", viewModel.passwordText.value)
+        assertEquals("password", viewModel.uiState.value.passwordText)
     }
 
     @Test
     fun `test isValidSignUp but blank email`() = runTest {
         viewModel.setEmailText("")
         assertEquals(false, viewModel.isValidSignUp())
-        assertEquals("Please use a valid email to sign up.", viewModel.errorMessage.value)
+        assertEquals("Please use a valid email to sign up.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
     fun `test isValidSignUp but invalid email`() = runTest {
         viewModel.setEmailText("email")
         assertEquals(false, viewModel.isValidSignUp())
-        assertEquals("Please use a valid email to sign up.", viewModel.errorMessage.value)
+        assertEquals("Please use a valid email to sign up.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -83,7 +83,7 @@ class SignupViewModelTest {
         viewModel.setEmailText("example@gmail.com")
         viewModel.setUsernameText("")
         assertEquals(false, viewModel.isValidSignUp())
-        assertEquals("Username should be 3 to 16 characters.", viewModel.errorMessage.value)
+        assertEquals("Username should be 3 to 16 characters.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -91,7 +91,7 @@ class SignupViewModelTest {
         viewModel.setEmailText("example@gmail.com")
         viewModel.setUsernameText("aaaaaaaaaaaaaaaaaaaaaaaaaa")
         assertEquals(false, viewModel.isValidSignUp())
-        assertEquals("Username should be 3 to 16 characters.", viewModel.errorMessage.value)
+        assertEquals("Username should be 3 to 16 characters.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -100,7 +100,7 @@ class SignupViewModelTest {
         viewModel.setUsernameText("username")
         viewModel.setPasswordText("")
         assertEquals(false, viewModel.isValidSignUp())
-        assertEquals("Password should be at least 6 characters.", viewModel.errorMessage.value)
+        assertEquals("Password should be at least 6 characters.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -109,7 +109,7 @@ class SignupViewModelTest {
         viewModel.setUsernameText("username")
         viewModel.setPasswordText("pass")
         assertEquals(false, viewModel.isValidSignUp())
-        assertEquals("Password should be at least 6 characters.", viewModel.errorMessage.value)
+        assertEquals("Password should be at least 6 characters.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -119,7 +119,7 @@ class SignupViewModelTest {
         viewModel.setUsernameText("username")
         viewModel.setPasswordText("password")
         assertEquals(false, viewModel.isValidSignUp())
-        assertEquals("User with the given email already exists!", viewModel.errorMessage.value)
+        assertEquals("User with the given email already exists!", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -136,19 +136,19 @@ class SignupViewModelTest {
 
         // user logs in and inputs are cleared
         assertEquals(true, viewModel.isValidSignUp())
-        assertEquals("", viewModel.emailText.value)
-        assertEquals("", viewModel.usernameText.value)
-        assertEquals("", viewModel.passwordText.value)
+        assertEquals("", viewModel.uiState.value.emailText)
+        assertEquals("", viewModel.uiState.value.usernameText)
+        assertEquals("", viewModel.uiState.value.passwordText)
         assertEquals(true, userList.contains(user))
     }
 
     @Test
     fun `test error message clears after input interaction`() = runTest {
         assertEquals(false, viewModel.isValidSignUp())
-        assertEquals("Please use a valid email to sign up.", viewModel.errorMessage.value)
+        assertEquals("Please use a valid email to sign up.", viewModel.uiState.value.errorMessage)
 
         viewModel.setEmailText("example@gmail.com")
-        assertEquals("", viewModel.errorMessage.value)
+        assertEquals("", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -157,15 +157,15 @@ class SignupViewModelTest {
         viewModel.setUsernameText("username")
         viewModel.setPasswordText("password")
         viewModel.isValidSignUp()
-        assertEquals("username", viewModel.usernameText.value)
-        assertEquals("a", viewModel.emailText.value)
-        assertEquals("password", viewModel.passwordText.value)
-        assertEquals("Please use a valid email to sign up.", viewModel.errorMessage.value)
+        assertEquals("username", viewModel.uiState.value.usernameText)
+        assertEquals("a", viewModel.uiState.value.emailText)
+        assertEquals("password", viewModel.uiState.value.passwordText)
+        assertEquals("Please use a valid email to sign up.", viewModel.uiState.value.errorMessage)
 
         viewModel.clearAll()
-        assertEquals("", viewModel.usernameText.value)
-        assertEquals("", viewModel.emailText.value)
-        assertEquals("", viewModel.passwordText.value)
-        assertEquals("", viewModel.errorMessage.value)
+        assertEquals("", viewModel.uiState.value.usernameText)
+        assertEquals("", viewModel.uiState.value.emailText)
+        assertEquals("", viewModel.uiState.value.passwordText)
+        assertEquals("", viewModel.uiState.value.errorMessage)
     }
 }

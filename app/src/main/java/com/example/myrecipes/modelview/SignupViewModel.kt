@@ -6,28 +6,35 @@ import com.example.myrecipes.model.database.User.User
 import com.example.myrecipes.model.database.User.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
-class SignupViewModel(
+open class SignupViewModel(
     application: Application,
     val userRepository: UserRepository
 ): AndroidViewModel(application) {
-    private val _usernameText = MutableStateFlow("")
-    val usernameText: StateFlow<String> = _usernameText
 
-    private val _emailText = MutableStateFlow("")
-    val emailText: StateFlow<String> = _emailText
+    data class UiState(
+        val usernameText: String = "",
+        val emailText: String = "",
+        val passwordText: String = "",
+        val errorMessage: String = ""
+    )
 
-    private val _passwordText = MutableStateFlow("")
-    val passwordText: StateFlow<String> = _passwordText
-
-    private val _errorMessage = MutableStateFlow("")
-    val errorMessage: StateFlow<String> = _errorMessage
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
 
     /**
      * sets the username text to the given value.
      */
     fun setUsernameText(value: String) {
-        _usernameText.value = value
+        _uiState.update { currentState ->
+            currentState.copy(
+                usernameText = value,
+                emailText = currentState.emailText,
+                passwordText = currentState.passwordText,
+                errorMessage = currentState.errorMessage,
+            )
+        }
         clearError()
     }
 
@@ -35,7 +42,14 @@ class SignupViewModel(
      * sets the email text to the given value.
      */
     fun setEmailText(value: String) {
-        _emailText.value = value
+        _uiState.update { currentState ->
+            currentState.copy(
+                usernameText = currentState.usernameText,
+                emailText = value,
+                passwordText = currentState.passwordText,
+                errorMessage = currentState.errorMessage,
+            )
+        }
         clearError()
     }
 
@@ -43,15 +57,43 @@ class SignupViewModel(
      * sets the password text to the given value.
      */
     fun setPasswordText(value: String) {
-        _passwordText.value = value
+        _uiState.update { currentState ->
+            currentState.copy(
+                usernameText = currentState.usernameText,
+                emailText = currentState.emailText,
+                passwordText = value,
+                errorMessage = currentState.errorMessage,
+            )
+        }
         clearError()
+    }
+
+    /**
+     * sets the error message to the given value.
+     */
+    private fun setErrorMessage(value: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                usernameText = currentState.usernameText,
+                emailText = currentState.emailText,
+                passwordText = currentState.passwordText,
+                errorMessage = value,
+            )
+        }
     }
 
     /**
      * clear error text
      */
     private fun clearError() {
-        _errorMessage.value = ""
+        _uiState.update { currentState ->
+            currentState.copy(
+                usernameText = currentState.usernameText,
+                emailText = currentState.emailText,
+                passwordText = currentState.passwordText,
+                errorMessage = "",
+            )
+        }
     }
 
     /**
@@ -77,23 +119,27 @@ class SignupViewModel(
      * if false, displays an error message
      */
     suspend fun isValidSignUp(): Boolean {
+        val email = _uiState.value.emailText
+        val username = _uiState.value.usernameText
+        val password = _uiState.value.passwordText
+
         val emailRegex = "^[A-Za-z0-9]*([@])(.+)(\\.)(.+)".toRegex()
-        if (emailText.value.isEmpty() || !emailRegex.matches(emailText.value)) {
-            _errorMessage.value = "Please use a valid email to sign up."
-        } else if (usernameText.value.length < 3 || usernameText.value.length > 16) {
-            _errorMessage.value = "Username should be 3 to 16 characters."
-        } else if (passwordText.value.length < 6) {
-            _errorMessage.value = "Password should be at least 6 characters."
+        if (email.isEmpty() || !emailRegex.matches(email)) {
+            setErrorMessage("Please use a valid email to sign up.")
+        } else if (username.length < 3 || username.length > 16) {
+            setErrorMessage("Username should be 3 to 16 characters.")
+        } else if (password.length < 6) {
+            setErrorMessage("Password should be at least 6 characters.")
         } else {
-            val user = userRepository.getUserByEmail(emailText.value)
+            val user = userRepository.getUserByEmail(email)
             if (user != null) {
-                _errorMessage.value = "User with the given email already exists!"
+                setErrorMessage("User with the given email already exists!")
             } else {
                 userRepository.insertUser(
                     User(
-                        username = usernameText.value,
-                        password = passwordText.value,
-                        email = emailText.value,
+                        username = username,
+                        password = password,
+                        email = email,
                     )
                 )
                 clearInput()

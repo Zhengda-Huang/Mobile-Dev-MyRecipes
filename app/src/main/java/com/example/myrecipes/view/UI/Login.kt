@@ -32,20 +32,18 @@ import kotlinx.coroutines.launch
 @Composable
 fun Login(
     viewModel: LoginViewModel/*= viewModel()*/,
+    uiState: LoginViewModel.UiState,
     savedRecipesViewModel : SavedRecipesViewModel,
     navController: NavHostController,
 ) {
     val context = LocalContext.current
-    val emailTextState = viewModel.emailText.collectAsState()
-    val passwordTextState = viewModel.passwordText.collectAsState()
-    val errorMessageState = viewModel.errorMessage.collectAsState()
-    val user_id = savedRecipesViewModel.user_id.collectAsState()
+//    val user_id = savedRecipesViewModel.user_id.collectAsState()
 
     // displays Toast for error
-    if (errorMessageState.value.isNotEmpty()) {
+    if (uiState.errorMessage.isNotEmpty()) {
         Toast.makeText(
             context,
-            errorMessageState.value,
+            uiState.errorMessage,
             Toast.LENGTH_LONG
         ).show()
     }
@@ -60,18 +58,17 @@ fun Login(
     ) {
         TextInputComponent(
             label = stringResource(id = R.string.email),
-            value = emailTextState.value,
+            value = uiState.emailText,
             onValueChange = { viewModel.setEmailText(it) },
             placeholderText = "enter email"
         )
 
         TextInputComponent(
             label = stringResource(id = R.string.password),
-            value = passwordTextState.value,
+            value = uiState.passwordText,
             onValueChange = { viewModel.setPasswordText(it) },
             isPassword = true,
             placeholderText = "enter password",
-
         )
 
         val coroutineScope = rememberCoroutineScope()

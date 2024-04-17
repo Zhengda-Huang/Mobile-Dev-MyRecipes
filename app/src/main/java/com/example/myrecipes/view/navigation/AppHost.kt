@@ -3,6 +3,7 @@ package com.example.myrecipes.view.navigation
 import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -54,10 +55,19 @@ fun AppNavHost(
             Home(navController = navController)
         }
         composable(NavigationItem.Login.route) {
-            Login(viewModel = loginViewModel, savedRecipesViewModel = savedRecipesViewModel, navController = navController)
+            Login(
+                viewModel = loginViewModel,
+                uiState = loginViewModel.uiState.collectAsState().value,
+                savedRecipesViewModel = savedRecipesViewModel,
+                navController = navController
+            )
         }
         composable(NavigationItem.Signup.route) {
-            Signup(viewModel = signupViewModel, navController = navController)
+            Signup(
+                viewModel = signupViewModel,
+                uiState = signupViewModel.uiState.collectAsState().value,
+                navController = navController
+            )
         }
         composable(NavigationItem.RecipeList.route) {
             RecipesList(modelViewModel = recipeListViewModel, navController = navController, savedRecipesViewModel = savedRecipesViewModel, user_id = user_id)

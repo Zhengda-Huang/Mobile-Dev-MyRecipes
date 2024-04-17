@@ -2,19 +2,22 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="ExampleInstrumentedTest">
-        <State />
-      </entry>
-      <entry key="HomeTest">
-        <State />
-      </entry>
       <entry key="LoginTest">
+        <State />
+      </entry>
+      <entry key="SignupTest">
         <State />
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="testLoginScreen()">
+      <entry key="testEditTextWorks()">
+        <State />
+      </entry>
+      <entry key="testTextFieldContent()">
+        <State />
+      </entry>
+      <entry key="testTextFieldInteractions()">
         <State />
       </entry>
     </value>

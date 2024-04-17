@@ -31,19 +31,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun Signup(
     viewModel: SignupViewModel/*= viewModel()*/,
+    uiState: SignupViewModel.UiState,
     navController: NavHostController,
 ) {
     val context = LocalContext.current
-    val usernameTextState = viewModel.usernameText.collectAsState()
-    val emailTextState = viewModel.emailText.collectAsState()
-    val passwordTextState = viewModel.passwordText.collectAsState()
-    val errorMessageState = viewModel.errorMessage.collectAsState()
 
     // displays Toast for error
-    if (errorMessageState.value.isNotEmpty()) {
+    if (uiState.errorMessage.isNotEmpty()) {
         Toast.makeText(
             context,
-            errorMessageState.value,
+            uiState.errorMessage,
             Toast.LENGTH_LONG
         ).show()
     }
@@ -58,21 +55,21 @@ fun Signup(
     ) {
         TextInputComponent(
             label = stringResource(id = R.string.username),
-            value = usernameTextState.value,
+            value = uiState.usernameText,
             onValueChange = { viewModel.setUsernameText(it) },
             placeholderText = "create a username"
         )
 
         TextInputComponent(
             label = stringResource(id = R.string.email),
-            value = emailTextState.value,
+            value = uiState.emailText,
             onValueChange = { viewModel.setEmailText(it) },
             placeholderText = "enter email"
         )
 
         TextInputComponent(
             label = stringResource(id = R.string.password),
-            value = passwordTextState.value,
+            value = uiState.passwordText,
             onValueChange = { viewModel.setPasswordText(it) },
             isPassword = true,
             placeholderText = "create a password"

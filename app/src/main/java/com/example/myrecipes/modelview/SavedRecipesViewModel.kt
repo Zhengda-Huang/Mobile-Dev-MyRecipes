@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 import kotlin.math.log
 
-class SavedRecipesViewModel(application: Application) {
+open class SavedRecipesViewModel(application: Application) {
     private val logger = Logger.getLogger("MyLogger")
     private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
     val recipes: StateFlow<List<Recipe>> = _recipes

@@ -5,25 +5,41 @@ import androidx.lifecycle.AndroidViewModel
 import com.example.myrecipes.model.database.User.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
-class LoginViewModel(
+open class LoginViewModel(
     application: Application,
     val userRepository: UserRepository,
 ): AndroidViewModel(application) {
-    private val _emailText = MutableStateFlow("")
-    val emailText: StateFlow<String> = _emailText
+    data class UiState(
+        val emailText: String = "",
+        val passwordText: String = "",
+        val errorMessage: String = ""
+    )
 
-    private val _passwordText = MutableStateFlow("")
-    val passwordText: StateFlow<String> = _passwordText
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
 
-    private val _errorMessage = MutableStateFlow("")
-    val errorMessage: StateFlow<String> = _errorMessage
+//    private val _emailText = MutableStateFlow("")
+//    val emailText: StateFlow<String> = _emailText
+//
+//    private val _passwordText = MutableStateFlow("")
+//    val passwordText: StateFlow<String> = _passwordText
+//
+//    private val _errorMessage = MutableStateFlow("")
+//    val errorMessage: StateFlow<String> = _errorMessage
 
     /**
      * sets the username text to the given value.
      */
     fun setEmailText(value: String) {
-        _emailText.value = value
+        _uiState.update { currentState ->
+            currentState.copy(
+                emailText = value,
+                passwordText = currentState.passwordText,
+                errorMessage = currentState.errorMessage,
+            )
+        }
         clearError()
     }
 
@@ -31,15 +47,38 @@ class LoginViewModel(
      * sets the password text to the given value.
      */
     fun setPasswordText(value: String) {
-        _passwordText.value = value
+        _uiState.update { currentState ->
+            currentState.copy(
+                emailText = currentState.emailText,
+                passwordText = value,
+                errorMessage = currentState.errorMessage,
+            )
+        }
         clearError()
+    }
+
+    private fun setErrorText(value: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                emailText = currentState.emailText,
+                passwordText = currentState.passwordText,
+                errorMessage = value,
+            )
+
+        }
     }
 
     /**
      * clear error text
      */
     private fun clearError() {
-        _errorMessage.value = ""
+        _uiState.update { currentState ->
+            currentState.copy(
+                emailText = currentState.emailText,
+                passwordText = currentState.passwordText,
+                errorMessage = "",
+            )
+        }
     }
 
     /**
@@ -59,7 +98,7 @@ class LoginViewModel(
     }
 
     suspend fun getUserId(): Long{
-        val user = userRepository.getUserByEmail(emailText.value)
+        val user = userRepository.getUserByEmail(_uiState.value.emailText)
         if (user != null) {
             return user.userId
         }
@@ -72,22 +111,25 @@ class LoginViewModel(
      * if false, displays an error message
      */
     suspend fun isValidCredentials(): Boolean {
+        val email = _uiState.value.emailText
+        val password = _uiState.value.passwordText
+
         val emailRegex = "^[A-Za-z0-9]*([@])(.+)(\\.)(.+)".toRegex()
-        if (emailText.value.isEmpty() || !emailRegex.matches(emailText.value)) {
-            _errorMessage.value = "Please enter your email correctly."
-        } else if (passwordText.value.isEmpty()) {
-            _errorMessage.value = "Please enter your password."
+        if (email.isEmpty() || !emailRegex.matches(email)) {
+            setErrorText("Please enter your email correctly.")
+        } else if (password.isEmpty()) {
+            setErrorText("Please enter your password.")
         } else {
-            val user = userRepository.getUserByEmail(emailText.value)
+            val user = userRepository.getUserByEmail(email)
             if (user != null) {
-                if (user.password == passwordText.value) {
+                if (user.password == password) {
                     clearInput()
                     return true
                 } else {
-                    _errorMessage.value = "Incorrect password, try again."
+                    setErrorText("Incorrect password, try again.")
                 }
             } else {
-                _errorMessage.value = "It seems like an account with this email does not exist."
+                setErrorText("It seems like an account with this email does not exist.")
             }
         }
         return false

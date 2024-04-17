@@ -27,47 +27,50 @@ class LoginViewModelTest {
 
     private lateinit var user: User
 
+    private lateinit var uiState: LoginViewModel.UiState
+
     @Before
     fun setUp() {
         viewModel = LoginViewModel(application, userRepository)
         user = User(
             username = "username", password = "password", email = "example@gmail.com"
         )
+        uiState = viewModel.uiState.value
     }
 
     @Test
     fun `initial state`() {
-        assertEquals("", viewModel.emailText.value)
-        assertEquals("", viewModel.passwordText.value)
-        assertEquals("", viewModel.errorMessage.value)
+        assertEquals("", viewModel.uiState.value.emailText)
+        assertEquals("", viewModel.uiState.value.passwordText)
+        assertEquals("", viewModel.uiState.value.errorMessage)
     }
 
     @Test
     fun `test setEmail function`() {
-        assertEquals("", viewModel.emailText.value)
+        assertEquals("", uiState.emailText)
         viewModel.setEmailText("example@gmail.com")
-        assertEquals("example@gmail.com", viewModel.emailText.value)
+        assertEquals("example@gmail.com", viewModel.uiState.value.emailText)
     }
 
     @Test
     fun `test setPassword function`() {
-        assertEquals("", viewModel.passwordText.value)
+        assertEquals("", viewModel.uiState.value.passwordText)
         viewModel.setPasswordText("password")
-        assertEquals("password", viewModel.passwordText.value)
+        assertEquals("password", viewModel.uiState.value.passwordText)
     }
 
     @Test
     fun `test isValidCredentials but blank email`() = runTest {
         viewModel.setEmailText("")
         assertEquals(false, viewModel.isValidCredentials())
-        assertEquals("Please enter your email correctly.", viewModel.errorMessage.value)
+        assertEquals("Please enter your email correctly.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
     fun `test isValidCredentials but invalid email`() = runTest {
         viewModel.setEmailText("email")
         assertEquals(false, viewModel.isValidCredentials())
-        assertEquals("Please enter your email correctly.", viewModel.errorMessage.value)
+        assertEquals("Please enter your email correctly.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -75,7 +78,7 @@ class LoginViewModelTest {
         viewModel.setEmailText("example@gmail.com")
         viewModel.setPasswordText("")
         assertEquals(false, viewModel.isValidCredentials())
-        assertEquals("Please enter your password.", viewModel.errorMessage.value)
+        assertEquals("Please enter your password.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -84,7 +87,7 @@ class LoginViewModelTest {
         viewModel.setEmailText("example@gmail.com")
         viewModel.setPasswordText("password")
         assertEquals(false, viewModel.isValidCredentials())
-        assertEquals("It seems like an account with this email does not exist.", viewModel.errorMessage.value)
+        assertEquals("It seems like an account with this email does not exist.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -93,7 +96,7 @@ class LoginViewModelTest {
         viewModel.setEmailText("example@gmail.com")
         viewModel.setPasswordText("not password")
         assertEquals(false, viewModel.isValidCredentials())
-        assertEquals("Incorrect password, try again.", viewModel.errorMessage.value)
+        assertEquals("Incorrect password, try again.", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -103,17 +106,17 @@ class LoginViewModelTest {
         viewModel.setPasswordText("password")
 
         assertEquals(true, viewModel.isValidCredentials())
-        viewModel.setEmailText("")
-        viewModel.setPasswordText("")
+        assertEquals("", viewModel.uiState.value.emailText)
+        assertEquals("", viewModel.uiState.value.passwordText)
     }
 
     @Test
     fun `test error message clears after interaction`() = runTest {
         assertEquals(false, viewModel.isValidCredentials())
-        assertEquals("Please enter your email correctly.", viewModel.errorMessage.value)
+        assertEquals("Please enter your email correctly.", viewModel.uiState.value.errorMessage)
 
         viewModel.setEmailText("example@gmail.com")
-        assertEquals("", viewModel.errorMessage.value)
+        assertEquals("", viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -122,13 +125,13 @@ class LoginViewModelTest {
         viewModel.setPasswordText("password")
         viewModel.isValidCredentials()
 
-        assertEquals("a", viewModel.emailText.value)
-        assertEquals("password", viewModel.passwordText.value)
-        assertEquals("Please enter your email correctly.", viewModel.errorMessage.value)
+        assertEquals("a", viewModel.uiState.value.emailText)
+        assertEquals("password", viewModel.uiState.value.passwordText)
+        assertEquals("Please enter your email correctly.", viewModel.uiState.value.errorMessage)
 
         viewModel.clearAll()
-        assertEquals("", viewModel.emailText.value)
-        assertEquals("", viewModel.passwordText.value)
-        assertEquals("", viewModel.errorMessage.value)
+        assertEquals("", viewModel.uiState.value.emailText)
+        assertEquals("", viewModel.uiState.value.passwordText)
+        assertEquals("", viewModel.uiState.value.errorMessage)
     }
 }

@@ -11,26 +11,23 @@ import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.myrecipes.modelview.LoginViewModel
-import com.example.myrecipes.modelview.SavedRecipesViewModel
-import com.example.myrecipes.view.UI.Login
+import com.example.myrecipes.modelview.SignupViewModel
+import com.example.myrecipes.view.UI.Signup
 import com.example.myrecipes.R
-import org.junit.Rule
-import org.junit.runner.RunWith
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.mock
+import org.junit.runner.RunWith
+import org.mockito.Mockito
 
 @RunWith(AndroidJUnit4::class)
-class LoginTest {
+class SignupTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private var navController: NavHostController = mock(NavHostController::class.java)
+    private var navController: NavHostController = Mockito.mock(NavHostController::class.java)
 
-    private var loginViewModel: LoginViewModel = mock(LoginViewModel::class.java)
-
-    private var savedRecipesViewModel: SavedRecipesViewModel = mock(SavedRecipesViewModel::class.java)
+    private var signupViewModel: SignupViewModel = Mockito.mock(SignupViewModel::class.java)
 
     private lateinit var context: Context
 
@@ -39,20 +36,19 @@ class LoginTest {
         context = InstrumentationRegistry.getInstrumentation().targetContext
 
         composeTestRule.setContent {
-            Login(
-                viewModel = loginViewModel,
-                uiState = LoginViewModel.UiState(),
-                savedRecipesViewModel = savedRecipesViewModel,
-                navController = navController
+            Signup(
+                viewModel = signupViewModel,
+                uiState = SignupViewModel.UiState(),
+                navController = navController,
             )
         }
     }
 
     @Test
     fun testButtons() {
-        val loginButton = composeTestRule.onNodeWithText(context.getString(R.string.login))
-        loginButton.assertIsDisplayed()
-        loginButton.assertHasClickAction()
+        val signupButton = composeTestRule.onNodeWithText(context.getString(R.string.signup))
+        signupButton.assertIsDisplayed()
+        signupButton.assertHasClickAction()
 
         val backButton = composeTestRule.onNodeWithText(context.getString(R.string.back))
         backButton.assertIsDisplayed()
@@ -62,28 +58,37 @@ class LoginTest {
     @Test
     fun testInputLabelsVisible() {
         composeTestRule.onNodeWithText(context.getString(R.string.email)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.username)).assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(R.string.password)).assertIsDisplayed()
     }
 
     @Test
-    fun testTextFieldInteractions() {
+    fun testTextFiledInteractions() {
         val emailTextField = composeTestRule.onNodeWithText("enter email")
-        val passwordTextField = composeTestRule.onNodeWithText("enter password")
+        val usernameTextField = composeTestRule.onNodeWithText("create a username")
+        val passwordTextField = composeTestRule.onNodeWithText("create a password")
 
         emailTextField.assertIsDisplayed()
         emailTextField.assertHasClickAction()
 
+        usernameTextField.assertIsDisplayed()
+        usernameTextField.assertHasClickAction()
+
         passwordTextField.assertIsDisplayed()
         passwordTextField.assertHasClickAction()
-
 
         emailTextField.assertIsNotFocused()
         emailTextField.performClick()
         emailTextField.assertIsFocused()
 
+        usernameTextField.assertIsNotFocused()
+        usernameTextField.performClick()
+        emailTextField.assertIsNotFocused()
+        usernameTextField.assertIsFocused()
+
         passwordTextField.assertIsNotFocused()
         passwordTextField.performClick()
-        emailTextField.assertIsNotFocused()
+        usernameTextField.assertIsNotFocused()
         passwordTextField.assertIsFocused()
     }
 }
